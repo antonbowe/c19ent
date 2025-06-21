@@ -24,7 +24,7 @@ public class User implements UserDetails {
 
   @JsonIgnore private boolean tokenized = false;
 
-  @Null(groups = {UserEndpoint.Validation.Registration.class})
+  @Null(groups = {UserEndpoint.Validation.Registration.class, UserEndpoint.Validation.Update.class})
   @Getter
   @Setter
   private String id;
@@ -35,6 +35,7 @@ public class User implements UserDetails {
   private String username;
 
   @NotNull(groups = {UserEndpoint.Validation.Registration.class})
+  @Null(groups = {UserEndpoint.Validation.Update.class})
   @Getter
   @Setter
   private String password;
@@ -55,6 +56,7 @@ public class User implements UserDetails {
   private String lastName;
 
   @NotNull(groups = {UserEndpoint.Validation.Registration.class})
+  @Null(groups = {UserEndpoint.Validation.Update.class})
   @Getter
   @Setter
   private Role role;
@@ -66,6 +68,7 @@ public class User implements UserDetails {
   @Getter
   @Setter
   @AssertTrue(groups = {UserEndpoint.Validation.Registration.class})
+  @Null(groups = {UserEndpoint.Validation.Update.class})
   private Boolean enabled;
 
   @Getter

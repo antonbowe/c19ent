@@ -2,12 +2,12 @@ package de.antonbowe.c19ent.user;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -112,4 +112,33 @@ public class UserService implements UserDetailsService {
     return this.userFactory.toObject(userModel);
   }
 
+  public Page<User> getUserPageByPrincipal(Pageable pageable) {
+    return this.userRepository
+        .findAll(pageable)
+        .map(userModel -> this.userFactory.toObject(userModel).setPassword(null));
+  }
+
+  public User updateUser(String id, User user) {
+    UserModel userModel = this.userRepository.findById(id)
+        .orElseThrow(
+            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User " + id + " not found"));
+
+    if (user.getUsername() != null && !user.getUsername().equals(userModel.getUsername())) {
+      userModel.setUsername(user.getUsername());
+    }
+
+    if (user.getEmail() != null && !user.getEmail().equals(userModel.getEmail())) {
+      userModel.setEmail(user.getEmail());
+    }
+
+    if (user.getFirstName() != null && !user.getFirstName().equals(userModel.getFirstName())) {
+      userModel.setFirstName(user.getFirstName());
+    }
+
+    if (user.getLastName() != null && !user.getLastName().equals(userModel.getLastName())) {
+      userModel.setLastName(user.getLastName());
+    }
+
+    return this.userFactory.toObject(this.userRepository.save(userModel));
+  }
 }
