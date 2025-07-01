@@ -1,24 +1,22 @@
 package de.antonbowe.c19ent.user;
 
-
-import java.util.ArrayList;
+import jakarta.persistence.*;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document("users")
+@Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Accessors(chain = true)
 public class UserModel {
 
-  @Id @Getter @Setter private String id;
+  @Id
+  @Getter @Setter @GeneratedValue private Long id;
 
   @Getter @Setter private String username;
   @Getter @Setter private String password;
@@ -29,22 +27,12 @@ public class UserModel {
 
   @Getter @Setter private Role role;
 
-  @Getter @DBRef private Set<UserModel> team = new HashSet<>();
+  @Getter @OneToMany(mappedBy = "manager")
+  private Set<UserModel> team = new HashSet<>();
 
-  @Getter @Setter @DBRef UserModel manager;
+  @ManyToOne
+  @Getter @Setter UserModel manager;
 
   @Getter @Setter private boolean enabled;
-
-
-  public List<String> getAllTeamIds() {
-    System.out.println(this.team.size() + "team members");
-    List<String> teamIds = new ArrayList<>();
-    for (UserModel user : team) {
-      System.out.println(user.getId() +" managed by " + this.username);
-      teamIds.add(user.getId());
-      teamIds.addAll(user.getAllTeamIds());
-    }
-    return teamIds;
-  }
 
 }
